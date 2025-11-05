@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title=AquaGuard Permit Checker</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#ffffff">
+<!-- Build: PWA Light Mode v1.0.1 -->
+<style>
+  :root {
+    --bg: #ffffff;
+    --card: #f4f6f8;
+    --muted: #475569;
+    --text: #0f172a;
+    --accent: #2563eb;
+    --warn: #f59e0b;
+    --danger: #dc2626;
+    --ok: #16a34a;
+    --border: #e2e8f0;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin:0; padding:0; background: var(--bg); color: var(--text); font-family: -apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Ubuntu,'Helvetica Neue',Arial; }
+  .container { max-width: 960px; margin: 24px auto 48px; padding: 0 16px; }
+  header { display:flex; gap:14px; align-items:center; margin-bottom: 16px; }
+  header img { height:56px; border-radius: 8px; border: 1px solid var(--border); background:#fff; }
+  h1 { font-size: 1.75rem; margin: 0; }
+  p.sub { color: var(--muted); margin: 4px 0 0; }
+  .banner { display:none; background:#fff7ed; border:1px solid #fcd34d; color:#92400e; padding:10px 12px; border-radius:10px; margin-bottom:12px; }
+  .card { background: var(--card); border:1px solid var(--border); border-radius: 14px; padding: 16px; margin: 16px 0; }
+  label { display:block; font-size: 0.9rem; margin: 6px 0 6px; color: var(--muted); }
+  input[type="text"], input[type="number"], select { width:100%; padding:10px 12px; border-radius: 10px; border:1px solid var(--border); background:#fff; color: var(--text); }
+  .row { display:grid; grid-template-columns: 1fr; gap:12px; }
+  @media (min-width: 720px) { .row { grid-template-columns: 2fr 1fr 1fr; } }
+  .btns { display:flex; gap: 10px; flex-wrap: wrap; margin-top: 10px; }
+  button { border:0; border-radius: 10px; padding: 10px 14px; cursor:pointer; font-weight: 600; }
+  .primary { background: var(--accent); color: #fff; }
+  .ghost { background: #fff; color: var(--text); border: 1px solid var(--border); }
+  .inline { display:flex; gap: 10px; align-items:center; flex-wrap:wrap; }
+  .tag { padding: 4px 8px; border-radius: 999px; font-size: 0.8rem; border: 1px solid var(--border); color: var(--muted); background:#fff; }
+  .result { padding: 14px; border-radius: 12px; margin-top: 14px; border: 1px dashed var(--border); background:#fff; }
+  .yes { border-color: var(--danger); background: #fef2f2; }
+  .no { border-color: var(--ok); background: #f0fdf4; }
+  .maybe { border-color: var(--warn); background: #fffbeb; }
+  small { color: var(--muted); }
+  .grid-2 { display:grid; grid-template-columns: 1fr; gap:12px; }
+  @media (min-width: 720px) { .grid-2 { grid-template-columns: 1fr 1fr; } }
+  details summary { cursor:pointer; font-weight:600; }
+  footer { color: var(--muted); font-size: 0.9rem; margin-top: 18px; text-align:center; }
+</style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <img src="icons/icon-192.png" alt="AquaGuard Logo">
+    <div>
+      <h1>AquaGuard Permit Checker</h1>
+      <p class="sub">Installable • Works offline • Based on Oct 7, 2025 permit rules</p>
+    </div>
+  </header>
+
+  <div id="offlineBanner" class="banner">Offline mode: Geocoding is unavailable. Use <b>Manual Override</b> and verify with <b>randymajors</b> and <b>qPublic</b> when online.</div>
+
+  <div class="card">
+    <label for="address">Address</label>
+    <input id="address" type="text" placeholder="e.g., 875 Pickens Industrial Dr NE, Marietta, GA 30062">
+
+    <div class="row">
+      <div>
+        <label for="work">Work Type</label>
+        <select id="work">
+          <option value="foundation_piers">Foundation Piers</option>
+          <option value="slab_piers">Slab Piers (exception)</option>
+          <option value="intellijacks">IntelliJacks</option>
+          <option value="supplemental_beams">Supplemental Beams</option>
+          <option value="other_structural">Other Structural</option>
+        </select>
+      </div>
+      <div>
+        <label for="cost">Total Project Cost ($)</label>
+        <input id="cost" type="number" min="0" step="1" placeholder="e.g., 9500">
+      </div>
+      <div>
+        <label for="emergency">Emergency?</label>
+        <select id="emergency">
+          <option value="no">No</option>
+          <option value="yes">Yes (threat to occupants)</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="btns">
+      <button class="primary" id="check">Check Permit</button>
+      <button class="ghost" id="openRandy">Open randymajors</button>
+      <button class="ghost" id="openQPublic">Open qPublic</button>
+    </div>
+
+    <div class="inline" style="margin-top:10px;">
+      <span class="tag" id="detected">Detected: —</span>
+      <span class="tag" id="debug">Debug: —</span>
+    </div>
+
+    <div id="result" class="result maybe" style="display:none;"></div>
+  </div>
+
+  <div class="grid-2">
+    <div class="card">
+      <h3 style="margin:0 0 8px">Manual Override</h3>
+      <label>County</label>
+      <input id="manual_county" type="text" placeholder="e.g., Cobb">
+      <label>City (or type 'Unincorporated')</label>
+      <input id="manual_city" type="text" placeholder="e.g., Marietta or Unincorporated">
+      <div class="btns">
+        <button class="ghost" id="applyManual">Apply Manual County/City</button>
+      </div>
+      <small>Use when offline or jurisdiction is unclear.</small>
+    </div>
+
+    <div class="card">
+      <h3 style="margin:0 0 8px">Notes</h3>
+      <ul style="margin:0 0 0 16px; padding:0 0 0 4px;">
+        <li><b>Slab piers</b> are exempt statewide.</li>
+        <li><b>Stone Mountain</b> requires permits for IntelliJacks, Supplemental Beams, Foundation Piers.</li>
+        <li><b>Counties requiring permits:</b> Cobb, DeKalb, Fulton, Gwinnett, Cherokee, Butts.</li>
+        <li><b>Cobb exceptions:</b> Mableton, Kennesaw, Acworth, Powder Springs, Unincorporated Cobb.</li>
+        <li><b>DeKalb exception:</b> Dunwoody.</li>
+        <li><b>Atlanta $10K rule:</b> management-only; may allow sub-$10k emergency work without permit.</li>
+      </ul>
+    </div>
+  </div>
+
+  <footer>© AquaGuard Foundation Solutions — A Groundworks Company</footer>
+</div>
+
+<script>
+// Offline banner
+function updateOfflineBanner(){
+  const b=document.getElementById('offlineBanner');
+  if (!navigator.onLine) { b.style.display='block'; } else { b.style.display='none'; }
+}
+window.addEventListener('online', updateOfflineBanner);
+window.addEventListener('offline', updateOfflineBanner);
+updateOfflineBanner();
+
+// ---- Rules ----
+const countiesRequiring = new Set(["Cobb","DeKalb","Fulton","Gwinnett","Cherokee","Butts"]);
+const exceptions = {
+  "Cobb": new Set(["Mableton","Kennesaw","Acworth","Powder Springs","Unincorporated"]),
+  "DeKalb": new Set(["Dunwoody"])
+};
+const stoneMountainSpecial = new Set(["intellijacks","supplemental_beams","foundation_piers"]);
+
+// Helpers
+function norm(s){ return s? s.toString().trim().replace(/\\s+/g,' ').replace(/\\b\\w/g,c=>c.toUpperCase()).replace(/ County$/i,'') : ''; }
+function pickCity(addr){ const keys=["city","town","village","municipality","hamlet","borough","locality","suburb"]; for (const k of keys){ if(addr[k]) return norm(addr[k]); } return ""; }
+function updateTags(detectedText, debugText){ document.getElementById("detected").textContent="Detected: "+detectedText; document.getElementById("debug").textContent="Debug: "+debugText; }
+function renderResult(status,title,bullets){
+  const box=document.getElementById("result"); box.style.display="block";
+  box.className="result " + (status==="YES"?"yes":status==="NO"?"no":"maybe");
+  const colorWord = status==="YES" ? "Permit Required" : status==="NO" ? "No Permit Required" : "Check / Try";
+  box.innerHTML = `<h3 style="margin:0 0 4px 0">${colorWord}</h3>
+    <div style="margin-bottom:8px">${title}</div>
+    <ul>${bullets.map(b=>`<li>${b}</li>`).join("")}</ul>`;
+}
+function decide({city,county,work,cost,emergency}){
+  const cty = norm(city); const cnty = norm(county); const bullets=[];
+  if (work==="slab_piers"){ bullets.push("Slab piers are exempt per company rule."); return {status:"NO", title:`Work in ${cty||"Unincorporated"} ${cnty}`, bullets}; }
+  if (cty==="Stone Mountain" && stoneMountainSpecial.has(work)){ bullets.push("Stone Mountain explicitly requires permits for this work type."); return {status:"YES", title:`Stone Mountain, ${cnty}`, bullets}; }
+  if (countiesRequiring.has(cnty)){
+    if (exceptions[cnty] && exceptions[cnty].has(cty||"Unincorporated")) { bullets.push(`${cnty} generally requires permits, but ${cty||"Unincorporated "+cnty} is an exception.`); return {status:"NO", title:`${cty||"Unincorporated"} ${cnty}`, bullets}; }
+    if (cty==="Atlanta" && cost>0 && cost<10000 && emergency==="yes"){ bullets.push("City of Atlanta <$10k emergency rule (management-only)."); return {status:"MAYBE", title:`Atlanta, ${cnty}`, bullets}; }
+    bullets.push(`${cnty} County is on the permit-required list.`);
+    return {status:"YES", title:`${cty||"Unincorporated"} ${cnty}`, bullets};
+  }
+  bullets.push(`${cnty} County is not on the permit-required list.`);
+  return {status:"NO", title:`${cty||"Unincorporated"} ${cnty}`, bullets};
+}
+
+// Geocoding via Nominatim (online only)
+async function geocodeAddress(q){
+  const url = new URL("https://nominatim.openstreetmap.org/search");
+  url.searchParams.set("q", q);
+  url.searchParams.set("format", "json");
+  url.searchParams.set("addressdetails", "1");
+  url.searchParams.set("limit", "1");
+  const res = await fetch(url.toString(), { headers:{ "Accept":"application/json" } });
+  if(!res.ok) throw new Error("Geocoding failed");
+  const list = await res.json();
+  if(!Array.isArray(list) || list.length===0) throw new Error("No results");
+  return list[0];
+}
+
+async function runCheck(manual=false){
+  const address = document.getElementById("address").value.trim();
+  const work = document.getElementById("work").value;
+  const cost = parseFloat(document.getElementById("cost").value)||0;
+  const emergency = document.getElementById("emergency").value;
+  let city="", county="";
+  try{
+    if(!manual){
+      if(!navigator.onLine) throw new Error("Offline: geocoding is unavailable.");
+      if(!address) throw new Error("Enter an address.");
+      const geo = await geocodeAddress(address);
+      const addr = geo.address || {};
+      city = pickCity(addr);
+      county = norm(addr.county || addr.county_name || "");
+      const state = norm(addr.state || "");
+      const postcode = (addr.postcode || "").toUpperCase();
+      updateTags(`${city || "Unincorporated"}, ${county} • ${state} ${postcode}`, `OSM class=${geo.class}, type=${geo.type}`);
+    } else {
+      city = norm(document.getElementById("manual_city").value || "");
+      county = norm(document.getElementById("manual_county").value || "");
+      updateTags(`${city || "Unincorporated"}, ${county}`, "Manual override");
+    }
+    if(!county) throw new Error("County not detected. Use Manual Override.");
+    const decision = decide({ city, county, work, cost, emergency });
+    renderResult(decision.status, decision.title, decision.bullets);
+  } catch(err){
+    renderResult("MAYBE", "Couldn’t determine jurisdiction", [err.message, "Use Manual Override and verify later with randymajors + qPublic."]);
+  }
+}
+
+document.getElementById("check").addEventListener("click", ()=>runCheck(false));
+document.getElementById("applyManual").addEventListener("click", ()=>runCheck(true));
+document.getElementById("openRandy").addEventListener("click", ()=>window.open("https://www.randymajors.org/county-map","_blank"));
+document.getElementById("openQPublic").addEventListener("click", ()=>window.open("https://qpublic.net/","_blank"));
+
+// PWA register
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', ()=>{
+    navigator.serviceWorker.register('service-worker.js').catch(()=>{});
+  });
+}
+</script>
+</body>
+</html>
