@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>AquaGuard Booking Hub – Matthew Urbanski, CFI</title>
+  <meta name="description" content="Book a free foundation inspection with AquaGuard Certified Field Inspector Matthew Urbanski. Explore products, warranties, and financing." />
+  <meta name="theme-color" content="#0A395F" />
+  <link rel="preload" href="style.css" as="style" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- HERO -->
+  <header class="hero">
+    <div class="wrap">
+      <h1>Book Your Free Foundation Inspection</h1>
+      <p>
+        With <strong>Matthew Urbanski</strong>, Certified Field Inspector — AquaGuard Foundation Solutions
+        <span class="subtle">• A Groundworks Company</span>
+      </p>
+      <a class="btn light" href="#intake">Get Started</a>
+    </div>
+  </header>
+
+  <!-- QUICK INTRO -->
+  <section class="intro">
+    <div class="wrap">
+      <p>
+        Permanent, warrantied solutions engineered for Georgia soil conditions. Answer a few quick questions so we can prepare for your visit.
+      </p>
+    </div>
+  </section>
+
+  <!-- INTAKE FORM -->
+  <main id="intake" class="wrap card">
+    <h2>60-Second Inspection Request</h2>
+    <form id="leadForm" autocomplete="on" novalidate>
+      <div class="grid">
+        <label class="full">
+          ZIP Code *
+          <input id="zip" type="text" maxlength="5" inputmode="numeric" placeholder="e.g., 30062" required />
+        </label>
+
+        <label>
+          Your Role *
+          <select id="role" required>
+            <option value="">Select</option>
+            <option>Homeowner</option>
+            <option>Buyer</option>
+            <option>Realtor</option>
+            <option>Property Manager</option>
+          </select>
+        </label>
+
+        <label>
+          Urgency
+          <select id="urgency">
+            <option>Just exploring options</option>
+            <option>Within 30 days</option>
+            <option>Immediate concern</option>
+          </select>
+        </label>
+
+        <label class="full">
+          Main Concerns * <span class="help">(select all that apply)</span>
+          <select id="issues" multiple size="4" required>
+            <option>Uneven/Bouncy Floors</option>
+            <option>Foundation Cracks</option>
+            <option>Basement Water Intrusion</option>
+            <option>Concrete Settling</option>
+            <option>Wall Bowing/Leaning</option>
+            <option>High Humidity/Musty Odors</option>
+          </select>
+        </label>
+
+        <label>
+          Full Name *
+          <input id="name" type="text" required />
+        </label>
+
+        <label>
+          Phone *
+          <input id="phone" type="tel" placeholder="###-###-####" required />
+        </label>
+
+        <label class="full">
+          Email *
+          <input id="email" type="email" required />
+        </label>
+      </div>
+
+      <div class="actions">
+        <button class="btn" type="submit">Review Availability</button>
+        <button class="btn ghost" type="button" id="exportBtn">Export Lead JSON</button>
+      </div>
+      <p id="formMsg" class="msg" role="status" aria-live="polite"></p>
+    </form>
+
+    <!-- CALENDAR -->
+    <div id="calendarBlock" class="calendar hidden">
+      <h3>Pick a time with Matt</h3>
+      <!-- Swap this src with your Wix Bookings or Calendly URL -->
+      <iframe id="calendarFrame" title="Booking Calendar" loading="lazy"></iframe>
+
+      <div class="alt-links">
+        <a id="calendarLink" class="btn light" target="_blank" rel="noopener">Open Calendar in New Tab</a>
+        <button class="btn ghost" id="copyLink">Copy Link</button>
+      </div>
+    </div>
+  </main>
+
+  <!-- PRODUCTS / SERVICES (1–14) -->
+  <section class="wrap card">
+    <h2>Foundation & Waterproofing Solutions</h2>
+    <p class="muted">Tap to expand and learn more.</p>
+
+    <details><summary>1. Push Pier Foundation Repair</summary><p>Steel piers driven to load-bearing strata to permanently stabilize and lift settled foundations.</p></details>
+    <details><summary>2. Helical Piers</summary><p>Torque-installed deep supports ideal for variable soil conditions or new construction.</p></details>
+    <details><summary>3. SmartJack® Crawl Space Supports</summary><p>Adjustable steel posts that level and stabilize sagging or bouncy floors by supporting the floor framing system.</p></details>
+    <details><summary>4. Wall Anchors & Carbon Fiber Reinforcement</summary><p>Permanent structural repair for bowing, cracked, or leaning basement walls.</p></details>
+    <details><summary>5. Basement Waterproofing Systems</summary><p>Interior drains, sump pumps, and vapor barriers protect basements from leaks and hydrostatic pressure.</p></details>
+    <details><summary>6. Sump Pumps with Battery Backup</summary><p>Reliable pumping systems that keep your basement dry, even during power outages.</p></details>
+    <details><summary>7. Basement Vapor Barriers & Dehumidifiers</summary><p>Reduce humidity and musty odors while protecting stored items and finishes.</p></details>
+    <details><summary>8. Crawl Space Encapsulation (CleanSpace®)</summary><p>Seals crawl spaces to prevent moisture, odors, and wood rot; improves indoor air quality.</p></details>
+    <details><summary>9. Crawl Space Insulation & Drainage</summary><p>Improve comfort and energy efficiency while preventing groundwater pooling and wood decay.</p></details>
+    <details><summary>10. Concrete Lifting (PolyRenewal™)</summary><p>Polyurethane injections lift and level uneven slabs for driveways, sidewalks, and garages with minimal downtime.</p></details>
+    <details><summary>11. Gutter Guardian™ Systems</summary><p>High-capacity gutters and guards that divert roof runoff away from your foundation.</p></details>
+    <details><summary>12. Exterior Drainage Solutions</summary><p>Downspout extensions and catch basins manage surface water around the home.</p></details>
+    <details><summary>13. Crack Repair & Structural Sealing</summary><p>Permanent crack injection and wall sealing to prevent water intrusion.</p></details>
+    <details><summary>14. Moisture & Mold Prevention</summary><p>Comprehensive moisture control to improve air quality and protect structure and finishes.</p></details>
+  </section>
+
+  <!-- FAQ -->
+  <section class="wrap card">
+    <h2>FAQs</h2>
+    <details><summary>What happens during my inspection?</summary><p>Your CFI evaluates symptoms, measures settlement, and presents a custom repair plan with transparent pricing.</p></details>
+    <details><summary>Do you offer financing?</summary><p>Yes — ask about 24-month 0/0/0 options via GreenSky (subject to approval).</p></details>
+    <details><summary>Are AquaGuard warranties transferable?</summary><p>Yes. AquaGuard warranties transfer to future homeowners and are a value add during real estate transactions.</p></details>
+  </section>
+
+  <!-- CONTACT / FOOTER -->
+  <footer class="footer">
+    <div class="wrap">
+      <p class="strong">Contact</p>
+      <p>
+        <a href="mailto:matthew.urbanski@aquaguard.net">matthew.urbanski@aquaguard.net</a> ·
+        <a href="tel:+14705681681">470-568-1681</a><br/>
+        AquaGuard Foundation Solutions • 875 Pickens Industrial Dr NE, Marietta, GA 30062
+      </p>
+      <p class="muted">© AquaGuard Foundation Solutions • A Groundworks Company</p>
+    </div>
+  </footer>
+
+  <script src="script.js" defer></script>
+</body>
+</html>
